@@ -1,0 +1,9 @@
+{
+  "name": "shopr-backend",
+  "version": "1.0.0",
+  "description": "Twilio webhook backend for Shopr",
+  "main": "api/webhook.js",
+  "dependencies": {
+    "twilio": "^4.20.0"
+  }
+}
