@@ -1,7 +1,5 @@
-const fetch = require('node-fetch'); // You might need to run: npm install node-fetch
-
 async function testTwilioWebhook() {
-  const webhookUrl = 'https://shopr-backend.vercel.app/api/webhook'; // Or http://localhost:3000/api/webhook for local testing
+  const webhookUrl = 'https://shopr-backend.vercel.app/api/webhook'; 
   
   const payload = new URLSearchParams({
     From: '+1234567890',
@@ -11,6 +9,7 @@ async function testTwilioWebhook() {
   console.log(`Sending fake text to ${webhookUrl}...`);
   
   try {
+    // Node.js 18+ has built-in fetch, no need for node-fetch package!
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
