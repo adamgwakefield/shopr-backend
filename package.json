@@ -5,6 +5,6 @@
   "main": "api/webhook.js",
   "dependencies": {
     "twilio": "^4.20.0",
-    "@google/generative-ai": "^0.21.0"
+    "@supabase/supabase-js": "^2.42.0"
   }
 }
