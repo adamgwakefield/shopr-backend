@@ -1,5 +1,4 @@
 const twilio = require('twilio');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -12,11 +11,7 @@ export default async function handler(req, res) {
   const twiml = new twilio.twiml.MessagingResponse();
 
   try {
-    // 1. Initialize Gemini using the environment variable we just set
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    // 2. Instruct the AI on how to behave
+    const apiKey = process.env.GEMINI_API_KEY;
     const prompt = `
       You are Shopr, an AI shopping assistant that works over SMS.
       A user just texted you this request: "${Body}"
@@ -28,13 +23,25 @@ export default async function handler(req, res) {
       Make it sound like you actually scoured the web and found them a great deal.
     `;
 
-    // 3. Get the AI's response
-    const result = await model.generateContent(prompt);
-    const aiResponse = result.response.text();
+    // Instead of dealing with Google's buggy SDK package, we just hit their API directly!
+    const response = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=\${apiKey}\`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
 
+    const data = await response.json();
+    
+    if (!response.ok) {
+       console.error("Gemini API Error:", data);
+       throw new Error("Gemini API returned an error");
+    }
+
+    const aiResponse = data.candidates[0].content.parts[0].text;
     console.log(`AI Response generated: ${aiResponse}`);
 
-    // 4. Send it back to Twilio
     twiml.message(aiResponse);
 
   } catch (error) {
