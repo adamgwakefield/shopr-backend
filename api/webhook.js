@@ -24,7 +24,7 @@ module.exports = async function(req, res) {
     `;
 
     // Instead of dealing with Google's buggy SDK package, we just hit their API directly!
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -36,7 +36,7 @@ module.exports = async function(req, res) {
     
     if (!response.ok) {
        console.error("Gemini API Error:", data);
-       throw new Error("Gemini API returned an error");
+       throw new Error(JSON.stringify(data.error) || "Unknown Gemini Error");
     }
 
     const aiResponse = data.candidates[0].content.parts[0].text;
@@ -45,8 +45,8 @@ module.exports = async function(req, res) {
     twiml.message(aiResponse);
 
   } catch (error) {
-    console.error('Error with AI processing:', error);
-    twiml.message("Oops, our AI shopping brain is taking a quick nap. Try again in a minute!");
+    const keyHint = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.substring(0,4) : "UNDEFINED";
+    twiml.message("DEBUG_ERROR: " + error.message + " | KEY: " + keyHint);
   }
 
   res.setHeader('Content-Type', 'text/xml');
