@@ -1,4 +1,5 @@
 const twilio = require('twilio');
+const { createClient } = require('@supabase/supabase-js');
 
 module.exports = async function(req, res) {
   if (req.method !== 'POST') {
@@ -13,6 +14,15 @@ module.exports = async function(req, res) {
   try {
     const geminiKey = process.env.GEMINI_API_KEY;
     const serperKey = process.env.SERPER_API_KEY;
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+    // STEP 0: Save the user and search query to our Database silently in the background
+    if (supabaseUrl && supabaseKey) {
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      supabase.from('searches').insert([{ phone: From, query: Body }])
+        .then(({error}) => { if(error) console.error("Supabase Error:", error) });
+    }
 
     // STEP 1: Search the real web (Google Shopping)
     console.log(`Searching Serper for: ${Body}`);
