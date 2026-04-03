@@ -4,6 +4,7 @@
   "description": "Twilio webhook backend for Shopr",
   "main": "api/webhook.js",
   "dependencies": {
-    "twilio": "^4.20.0"
+    "twilio": "^4.20.0",
+    "@google/generative-ai": "^0.2.1"
   }
 }
